@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const currencies = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/%s.json"
+const currencies = "https://latest.currency-api.pages.dev/v1/currencies/%s.json"
 
 func GetRate(input, target string) (float64, error) {
 	input = strings.ToLower(strings.TrimSpace(input))
@@ -44,5 +44,10 @@ func GetRate(input, target string) (float64, error) {
 		log.Fatal(err)
 	}
 	/*-------------------------------------------*/
-	return GetRate(input, target)
+
+	rate, ok := rates[target]
+	if !ok {
+		log.Fatal(0, "wrong zer0")
+	}
+	return rate, nil
 }
