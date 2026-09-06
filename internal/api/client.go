@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -15,6 +16,43 @@ func GetRate(input, target string) (float64, error) {
 	input = strings.ToLower(strings.TrimSpace(input))
 	target = strings.ToLower(strings.TrimSpace(target))
 
+	rates, err := Fetch(input)
+	if err != nil {
+		return 0, err
+	}
+
+	rate, ok := rates[target]
+	if !ok {
+		return 0, errors.New("target not found")
+	}
+
+	return rate, nil
+}
+
+func GetRates(input string, target []string) (map[string]float64, error) {
+	input = strings.ToLower(strings.TrimSpace(input))
+
+	rates, err := Fetch(input)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]float64)
+
+	for _, tar := range target {
+		tar = strings.ToLower(strings.TrimSpace(input))
+		value, ok := rates[tar]
+		if !ok {
+			return nil, errors.New("tar not found")
+		} else if ok {
+			result[tar] = value
+		}
+	}
+	return result, nil
+
+}
+
+func Fetch(input string) (map[string]float64, error) {
 	url := fmt.Sprintf(currencies, input)
 
 	response, err := http.Get(url)
@@ -24,7 +62,10 @@ func GetRate(input, target string) (float64, error) {
 	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
-	/*-------------------------------------------*/
+	if err != nil {
+		return nil, err
+	}
+
 	/*firstUnmarshal*/
 	raw := make(map[string]json.RawMessage)
 	err = json.Unmarshal(body, &raw)
@@ -43,11 +84,6 @@ func GetRate(input, target string) (float64, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	/*-------------------------------------------*/
 
-	rate, ok := rates[target]
-	if !ok {
-		log.Fatal(0, "wrong zer0")
-	}
-	return rate, nil
+	return rates, nil
 }
