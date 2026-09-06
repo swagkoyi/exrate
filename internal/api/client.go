@@ -40,16 +40,15 @@ func GetRates(input string, target []string) (map[string]float64, error) {
 	result := make(map[string]float64)
 
 	for _, tar := range target {
-		tar = strings.ToLower(strings.TrimSpace(input))
+		tar = strings.ToLower(strings.TrimSpace(tar))
 		value, ok := rates[tar]
 		if !ok {
-			return nil, errors.New("tar not found")
-		} else if ok {
+			continue
+		} else {
 			result[tar] = value
 		}
 	}
 	return result, nil
-
 }
 
 func Fetch(input string) (map[string]float64, error) {
