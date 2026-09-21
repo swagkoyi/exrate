@@ -53,6 +53,8 @@ func GetRates(input string, target []string) (map[string]float64, error) {
 
 func Fetch(input string) (map[string]float64, error) {
 	url := fmt.Sprintf(currencies, input)
+	resp, err := http.Get(url)
+	log.Printf("http status: %d", resp.StatusCode)
 
 	response, err := http.Get(url)
 	if err != nil {
